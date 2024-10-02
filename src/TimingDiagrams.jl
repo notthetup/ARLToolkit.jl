@@ -2,6 +2,7 @@ module TimingDiagrams
 
 using ..Plots: plot, plot!, annotate!, Shape, text
 using LinearAlgebra
+using Printf
 
 export timingdiagram, node!, tx!
 
@@ -18,7 +19,9 @@ const timings = Float64[]
 
 const theme = Dict{Symbol,Any}(
   :txheight => 10.0,
+  :nodefontsize => 10,
   :fontsize => 8,
+  :fontfamily => "sans-serif",
   :ypad => 5.0,
   :tpad => 0.01,
   :txcolor => :blue,
@@ -37,7 +40,7 @@ function timingdiagram(f; kwargs...)
   f()
   for n ∈ nodes
     plot!(plt, [minimum(timings) - theme[:tpad], maximum(timings) + theme[:tpad]], [n.ypos, n.ypos]; color=theme[:nodecolor])
-    annotate!(plt, -theme[:tpad], n.ypos, text(n.name * " ", theme[:fontsize], :right))
+    annotate!(plt, -theme[:tpad], n.ypos, text(n.name * " ", theme[:nodefontsize], :right; family=theme[:fontfamily]))
   end
   empty!(nodes)
   empty!(timings)
@@ -52,20 +55,20 @@ end
 function tx!(t, from, to=setdiff(eachindex(nodes),from); duration=duration[], txlabel=nothing, txtiminglabel=nothing, rxlabels=nothing, rxtiminglabels=nothing)
   rxtimes = [t + norm(nodes[i].pos - nodes[from].pos) / speed[] for i ∈ to]
   duration > 0.0 && rect!(t, nodes[from].ypos, duration, theme[:txheight]; color=theme[:txcolor])
-  txlabel === nothing || annotate!(t + duration/2, nodes[from].ypos - theme[:txheight] - theme[:ypad], text(txlabel, theme[:fontsize], :bottom))
+  txlabel === nothing || annotate!(t + duration/2, nodes[from].ypos - theme[:txheight] - theme[:ypad], text(txlabel, theme[:fontsize], :bottom; family=theme[:fontfamily]))
   if (txtiminglabel === nothing)
-    annotate!(t, nodes[from].ypos + theme[:ypad], text("$t s", theme[:fontsize], :top))
+    annotate!(t, nodes[from].ypos + theme[:ypad], text("$(@sprintf("%0.2f", t)) s", theme[:fontsize], :top; family=theme[:fontfamily]))
   else
-    annotate!(t, nodes[from].ypos + theme[:ypad], text(txtiminglabel, theme[:fontsize], :top))
+    annotate!(t, nodes[from].ypos + theme[:ypad], text(txtiminglabel, theme[:fontsize], :top; family=theme[:fontfamily]))
   end
   for (i, rx) ∈ enumerate(to)
     plot!([t, rxtimes[i]], [nodes[from].ypos, nodes[rx].ypos]; color=theme[:linecolor])
     duration > 0.0 && rect!(rxtimes[i], nodes[rx].ypos, duration, theme[:txheight]; color=theme[:rxcolor])
-    rxlabels === nothing || annotate!(rxtimes[i] + duration/2, nodes[rx].ypos - theme[:txheight] - theme[:ypad], text(rxlabels[i], theme[:fontsize], :bottom))
-    if (rxtiminglabels === nothing) 
-      annotate!(rxtimes[i], nodes[rx].ypos + theme[:ypad], text("$(rxtimes[i]) s", theme[:fontsize], :top))
+    rxlabels === nothing || annotate!(rxtimes[i] + duration/2, nodes[rx].ypos - theme[:txheight] - theme[:ypad], text(rxlabels[i], theme[:fontsize], :bottom; family=theme[:fontfamily]))
+    if (rxtiminglabels === nothing)
+      annotate!(rxtimes[i], nodes[rx].ypos + theme[:ypad], text("$(@sprintf("%0.2f", rxtimes[i])) s", theme[:fontsize], :top; family=theme[:fontfamily]))
     else
-      annotate!(rxtimes[i], nodes[rx].ypos + theme[:ypad], text(rxtiminglabels[i], theme[:fontsize], :top))
+      annotate!(rxtimes[i], nodes[rx].ypos + theme[:ypad], text(rxtiminglabels[i], theme[:fontsize], :top; family=theme[:fontfamily]))
     end
   end
   push!(timings, t)
