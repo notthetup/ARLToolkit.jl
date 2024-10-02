@@ -59,7 +59,7 @@ function tx!(t, from, to=setdiff(eachindex(nodes),from); duration=duration[], tx
     duration > 0.0 && rect!(rxtimes[i], nodes[rx].ypos, duration, theme[:txheight]; color=theme[:rxcolor])
     rxlabels === nothing || annotate!(rxtimes[i] + duration/2, nodes[rx].ypos - theme[:txheight] - theme[:ypad], text(rxlabels[i], theme[:fontsize], :bottom))
     if (rxtiminglabels === nothing) 
-      annotate!(rxtimes[i], nodes[rx].ypos + theme[:ypad], text(rxtimes[i], theme[:fontsize], :top))
+      annotate!(rxtimes[i], nodes[rx].ypos + theme[:ypad], text("$(rxtimes[i]*1000) ms", theme[:fontsize], :top))
     else
       annotate!(rxtimes[i], nodes[rx].ypos + theme[:ypad], text(rxtiminglabels[i], theme[:fontsize], :top))
     end
