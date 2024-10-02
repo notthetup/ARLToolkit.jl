@@ -58,8 +58,12 @@ function tx!(t, from, to=setdiff(eachindex(nodes),from); duration=duration[], tx
     plot!([t, rxtimes[i]], [nodes[from].ypos, nodes[rx].ypos]; color=theme[:linecolor])
     duration > 0.0 && rect!(rxtimes[i], nodes[rx].ypos, duration, theme[:txheight]; color=theme[:rxcolor])
     rxlabels === nothing || annotate!(rxtimes[i] + duration/2, nodes[rx].ypos - theme[:txheight] - theme[:ypad], text(rxlabels[i], theme[:fontsize], :bottom))
-    rxtiminglabels === nothing || annotate!(rxtimes[i], nodes[rx].ypos + theme[:ypad], text(rxtiminglabels[i], theme[:fontsize], :top))
+    if (rxtiminglabels === nothing) 
+      annotate!(rxtimes[i], nodes[rx].ypos + theme[:ypad], text(rxtimes[i], theme[:fontsize], :top))
+    else
+      annotate!(rxtimes[i], nodes[rx].ypos + theme[:ypad], text(rxtiminglabels[i], theme[:fontsize], :top))
     end
+  end
   push!(timings, t)
   push!(timings, minimum(rxtimes))
   push!(timings, maximum(rxtimes) + duration)
