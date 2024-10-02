@@ -53,7 +53,11 @@ function tx!(t, from, to=setdiff(eachindex(nodes),from); duration=duration[], tx
   rxtimes = [t + norm(nodes[i].pos - nodes[from].pos) / speed[] for i ∈ to]
   duration > 0.0 && rect!(t, nodes[from].ypos, duration, theme[:txheight]; color=theme[:txcolor])
   txlabel === nothing || annotate!(t + duration/2, nodes[from].ypos - theme[:txheight] - theme[:ypad], text(txlabel, theme[:fontsize], :bottom))
-  txtiminglabel === nothing || annotate!(t, nodes[from].ypos + theme[:ypad], text(txtiminglabel, theme[:fontsize], :top))
+  if (txtiminglabel === nothing)
+    annotate!(t, nodes[from].ypos + theme[:ypad], text("$t s", theme[:fontsize], :top))
+  else
+    annotate!(t, nodes[from].ypos + theme[:ypad], text(txtiminglabel, theme[:fontsize], :top))
+  end
   for (i, rx) ∈ enumerate(to)
     plot!([t, rxtimes[i]], [nodes[from].ypos, nodes[rx].ypos]; color=theme[:linecolor])
     duration > 0.0 && rect!(rxtimes[i], nodes[rx].ypos, duration, theme[:txheight]; color=theme[:rxcolor])
